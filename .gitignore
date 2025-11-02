@@ -160,3 +160,6 @@ xcuserdata
 **/xcshareddata/WorkspaceSettings.xcsettings
 
 # End of https://www.toptal.com/developers/gitignore/api/macos,swift,swiftpm,swiftpackagemanager,xcode,visualstudiocode
+
+# Claude Code
+CLAUDE.md

@@ -13,7 +13,6 @@ import SwiftData
 @propertyWrapper
 @dynamicMemberLookup
 public struct CloudKitJSON<T: Codable>: Codable {
-
     /// The stored JSON data - using var to allow mutations
     private var data: Data
 
@@ -56,8 +55,7 @@ public struct CloudKitJSON<T: Codable>: Codable {
     // MARK: - Codable Conformance
 
     public init(from decoder: Decoder) throws {
-        if let container = try? decoder.container(keyedBy: CodingKeys.self),
-           let data = try? container.decodeIfPresent(Data.self, forKey: .data) {
+        if let container = try? decoder.container(keyedBy: CodingKeys.self), let data = try? container.decodeIfPresent(Data.self, forKey: .data) {
             // Handle keyed container (SwiftData compatibility)
             self.data = data
         } else {
@@ -80,12 +78,11 @@ public struct CloudKitJSON<T: Codable>: Codable {
 
 // MARK: - Dynamic Member Lookup for Direct Property Access
 
-extension CloudKitJSON {
-
+public extension CloudKitJSON {
     /// Allows seamless read access to properties using dot syntax
     /// - Parameter keyPath: Key path to the desired property
     /// - Returns: The value of the property
-    public subscript<U>(dynamicMember keyPath: KeyPath<T, U>) -> U {
+    subscript<U>(dynamicMember keyPath: KeyPath<T, U>) -> U {
         return wrappedValue[keyPath: keyPath]
     }
 }
@@ -117,38 +114,19 @@ public class MutableProxy<T: Codable> {
     }
 }
 
-// MARK: - Convenience Property Access Extensions for SwiftData Models
-
-/// Extension to provide property wrapper-like access for SwiftData models
-extension CloudKitJSON where T: AnyObject {
-
-    /// Read-only property access for reference types
-    /// - Parameter keyPath: Key path to the desired property
-    /// - Returns: The value of the property
-    public func access<U>(_ keyPath: KeyPath<T, U>) -> U {
-        return wrappedValue[keyPath: keyPath]
-    }
-}
-
 // MARK: - Convenience Methods
 
-extension CloudKitJSON {
-
+public extension CloudKitJSON {
     /// Get the JSON string representation
-    public var jsonString: String? {
+    var jsonString: String? {
         String(data: data, encoding: .utf8)
     }
 
     /// Initialize from JSON string
     /// - Parameter jsonString: JSON string to decode
-    public init?(jsonString: String) {
+    init?(jsonString: String = "") {
         guard let data = jsonString.data(using: .utf8) else { return nil }
         self.init(data: data)
-    }
-
-    /// Create a new instance with refreshed decoding (always creates fresh decode)
-    public func refreshed() -> CloudKitJSON<T> {
-        return CloudKitJSON(data: data)
     }
 }
 
